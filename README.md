@@ -188,8 +188,6 @@
 
   * 在search的项目文件中找到build.sh脚本，如果是linux的服务器，可以直接执行此脚本，会生成一个main的可执行文件
 
-    <img src="/Users/kid/Library/Application Support/typora-user-images/image-20200806144357904.png" alt="image-20200806144357904" style="zoom:50%;" />
-
     ```shell
     #根据服务器的系统不同改变下面的参数
     #GOOS：目标操作系统

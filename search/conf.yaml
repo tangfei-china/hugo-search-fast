@@ -1,0 +1,12 @@
+#sonic的服务地址
+sonic_host: localhost
+#sonic的密码
+sonic_password: SecretPassword
+#sonic的集合名称
+sonic_collection: demo
+#sonic的桶名称
+sonic_bucket: demo
+sonic_query_limit: 10
+sonic_query_offset: 0
+#服务端口
+search_port: 8089

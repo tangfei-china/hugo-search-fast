@@ -1,0 +1,17 @@
+#sonic的服务地址
+sonic_host: localhost
+#sonic的密码
+sonic_password: SecretPassword
+#sonic的集合名称
+sonic_collection: demo
+#sonic的桶名称
+sonic_bucket: demo
+#需要去除的地址和post_path对应的
+#  例如：root_path: /A
+#       post_path: /A/B
+#  结果的文章路径就是   /B
+root_path: /Users/kid/tangf/SevenBook/site/content
+#需要检索的静态博客父目录
+post_path: /Users/kid/tangf/SevenBook/site/content/post
+# true 所有博客重新创建索引 false 创建最新博客的索引
+index_all_init: false

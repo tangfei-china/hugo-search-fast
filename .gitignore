@@ -1,3 +1,5 @@
 *.DS_Store
 .idea/
 search/gin.log
+search/search
+searchIndex/search_index

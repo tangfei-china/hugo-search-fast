@@ -1,6 +1,7 @@
 package common
 
 import (
+	"flag"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
@@ -15,11 +16,16 @@ type configuration struct {
 	SonicBucket      string `yaml:"sonic_bucket"`
 	SonicQueryLimit  int    `yaml:"sonic_query_limit"`
 	SonicQueryOffset int    `yaml:"sonic_query_offset"`
-	SearchPort       string    `yaml:"search_port"`
+	SearchPort       string `yaml:"search_port"`
 }
 
 func (c *configuration) getConf() *configuration {
-	yamlFile, err := ioutil.ReadFile("conf.yaml")
+
+	path := flag.String("c", "conf.yaml", "配置文件的路径")
+
+	flag.Parse()
+
+	yamlFile, err := ioutil.ReadFile(*path)
 	if err != nil {
 		panic(err.Error())
 	}

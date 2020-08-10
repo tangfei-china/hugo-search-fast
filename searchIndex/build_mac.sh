@@ -1,2 +1,2 @@
-# Mac 下执行
-go build main.go
+# Mac 编译和执行
+go build -o search_index

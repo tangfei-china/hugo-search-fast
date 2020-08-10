@@ -193,7 +193,7 @@
     #GOOS：目标操作系统
     #GOARCH：目标操作系统的架构
     #CGO_ENABLED=0的意思是使用C语言版本的GO编译器，参数配置为0的时候就关闭C语言版本的编译器了
-    CGO_ENABLED=0  GOOS=linux  GOARCH=amd64  go build main.go
+    CGO_ENABLED=0  GOOS=linux  GOARCH=amd64  go build -o search
     ```
 
   * 拷贝可执行文件和配置文件conf.yaml到服务上
@@ -219,7 +219,10 @@
 
     ```shell
     #执行后会监听服务器的8089的端口服务
-    ./main
+    ./search
+    
+    #如果配置在其他的目录下，需要指定目录地址
+    ./search -c="xxxxx"
     ```
 
   * 这个搜索服务可以用nginx来代理开放
@@ -234,7 +237,7 @@
 
     ```shell
     # Mac 下执行
-    go build main.go
+    go build -o search_index
     ```
 
   * 拷贝可执行文件main和配置文件conf.yaml
@@ -319,6 +322,15 @@
       options: ""
     ---
     ```
+    
+  * 运行
+
+    ```shell
+    # 如果执行程序和配置在一个目录下，可以不配置-c参数
+    ./search_index -c="xxxxxxxx"
+    ```
+
+    
 
 * 怎么使用这个搜索服务，请看项目案例的介绍
 

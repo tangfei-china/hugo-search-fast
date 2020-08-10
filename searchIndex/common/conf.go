@@ -24,7 +24,7 @@ type configuration struct {
 
 func (c *configuration) getConf() *configuration {
 
-	path := flag.String("p", "conf.yaml", "配置文件的路径")
+	path := flag.String("c", "conf.yaml", "配置文件的路径")
 
 	flag.Parse()
 

@@ -12,24 +12,27 @@ import (
 	"strings"
 )
 
-func CreateIndex(posts []entity.Post) {
-
+// ProcessIndex 索引的处理
+func ProcessIndex(posts []entity.Post) {
+	//创建索引
 	var list []sonic.IngestBulkRecord
+	//删除索引
+	var delIndex []sonic.IngestBulkRecord
 
 	for _, item := range posts {
-		record := initRecord(item.Title)
+		record, isDel := transitionRecord(item.Title)
 		if record.Object != "" && record.Text != "" {
-			list = append(list, record)
+			if isDel {
+				delIndex = append(delIndex, record)
+			} else {
+				list = append(list, record)
+			}
 		}
 	}
 
-	if len(list) == 0 {
-		log.Warn("组装索引数据没有数据")
+	if len(list) == 0 && len(delIndex) == 0 {
+		log.Warn("没有索引数据需要更新")
 		return
-	}
-
-	for _, item := range list {
-		log.Info(item.Object, "-", item.Text)
 	}
 
 	log.Info("开始连接Sonic服务")
@@ -40,6 +43,35 @@ func CreateIndex(posts []entity.Post) {
 	}
 
 	defer ingester.Quit()
+
+	AddIndex(list, ingester)
+
+	DelIndex(delIndex, ingester)
+}
+
+// DelIndex 删除索引数据
+func DelIndex(list []sonic.IngestBulkRecord, ingester sonic.Ingestable) {
+	if len(list) == 0 {
+		log.Warn("没有删除索引数据")
+		return
+	}
+
+	log.Warnf("删除索引数据：%d", len(list))
+
+	for _, item := range list {
+		ingester.FlushObject(Conf.SonicCollection, Conf.SonicBucket, item.Object)
+	}
+}
+
+// AddIndex 新增索引数据
+func AddIndex(list []sonic.IngestBulkRecord, ingester sonic.Ingestable) {
+
+	if len(list) == 0 {
+		log.Warn("没有新增索引数据")
+		return
+	}
+
+	log.Warnf("新增索引数据：%d", len(list))
 
 	for _, item := range list {
 		ingester.FlushObject(Conf.SonicCollection, Conf.SonicBucket, item.Object)
@@ -59,7 +91,7 @@ func CreateIndex(posts []entity.Post) {
 
 //组装索引数据
 //Object,Text
-func initRecord(strPath string) sonic.IngestBulkRecord {
+func transitionRecord(strPath string) (sonic.IngestBulkRecord, bool) {
 
 	var res sonic.IngestBulkRecord
 
@@ -83,9 +115,19 @@ func initRecord(strPath string) sonic.IngestBulkRecord {
 	*/
 
 	var postTitle, postDesc string
+	// 判断是草稿就跳过
+	var postDelIndex bool
 
 	//是否有下一行
 	for scanner.Scan() {
+
+		//提取是否草稿
+		draft, draftStr := utils.MatchString(`^draft: (.+)$`, scanner.Text())
+		if draft {
+			if "true" == draftStr {
+				postDelIndex = true
+			}
+		}
 
 		//提取标题内容
 		title, titleStr := utils.MatchString(`^title: "(.+)"$`, scanner.Text())
@@ -110,7 +152,7 @@ func initRecord(strPath string) sonic.IngestBulkRecord {
 	if postTitle == "" || postDesc == "" {
 		res.Object = ""
 		res.Text = ""
-		return res
+		return res, postDelIndex
 	}
 
 	res.Object += postTitle
@@ -120,6 +162,5 @@ func initRecord(strPath string) sonic.IngestBulkRecord {
 	encryptString, _ := utils.DESEncryptString(res.Object)
 	res.Object = encryptString
 
-	return res
-
+	return res, postDelIndex
 }

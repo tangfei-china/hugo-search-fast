@@ -25,7 +25,7 @@ func filterPost(s []entity.Post, filter func(x entity.Post) bool) []entity.Post 
 
 func main() {
 
-	log.Info("开始获取文件")
+	log.Info("开始扫描文件")
 
 	var posts []entity.Post
 
@@ -65,14 +65,14 @@ func main() {
 		log.Infof("名称：%s - 日期：%s \n", item.Title, item.DateTime)
 	}
 
-	log.Info("需要创建索引文件数量：", len(posts))
-
-	log.Info("开始构建索引数据")
+	log.Info("需要更新索引文件数量：", len(posts))
 
 	if len(posts) == 0 {
-		log.Warn("没有文件需要建立索引")
+		log.Warn("没有文件需要更新索引")
 	} else {
-		sonic.CreateIndex(posts)
+		sonic.ProcessIndex(posts)
 	}
+
+	log.Info("搜索索引处理结束")
 
 }
